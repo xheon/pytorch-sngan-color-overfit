@@ -26,7 +26,6 @@ def train(opts):
         sample_path = os.path.join(opts.output_path, f"{sample_index:03d}")
         os.makedirs(sample_path, exist_ok=True)
 
-
     # Define models
     generator = Generator(latent_dimension).to(device, non_blocking=True)
     discriminator = Discriminator().to(device, non_blocking=True)
@@ -38,16 +37,12 @@ def train(opts):
 
     # Define optimizers
     optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.0001, betas=(0.5, 0.99))
-    optimizer_d = torch.optim.Adam(filter(lambda p: p.requires_grad, discriminator.parameters()),
-                                   lr=0.0001, betas=(0.5, 0.99))
+    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.0001, betas=(0.5, 0.99))
 
     criterion = torch.nn.functional.binary_cross_entropy_with_logits
 
-    # Define tensorboard writers
-
     # Define validation params
     z_validation = torch.randn(batch_size, latent_dimension, 1, 1, device=device)
-
 
     # Export some real images
     real_sample_images = next(iter(dataloader))
@@ -119,19 +114,17 @@ def train(opts):
                 val_samples = generator(z_validation).to("cpu")
                 generator.train()
 
+            # output image
             for sample_id in range(batch_size):
                 sample_iteration_path = os.path.join(opts.output_path, f"{sample_id:03d}", f"{iteration+1:05d}.jpg")
                 image_sample = (val_samples[sample_id].permute(1, 2, 0).numpy() + 1) / 2
                 image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
                 image_sample.save(sample_iteration_path)
 
-        # every N iteration output log to tensorboard
-        # output image
-
-
 
 def set_gpus(gpus):
     os.environ['CUDA_VISIBLE_DEVICES'] = str(gpus)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
