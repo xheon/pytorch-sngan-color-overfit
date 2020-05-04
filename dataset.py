@@ -22,7 +22,7 @@ class Dataset(torch.utils.data.Dataset):
         self.max_iterations = max_iterations
 
     def __getitem__(self, index):
-        random_color_index = np.random.randint(0, self.colors.shape[0]-1, size=1).item()
+        random_color_index = np.random.randint(0, self.colors.shape[0], size=1).item()
         random_color = self.colors[random_color_index][:, np.newaxis, np.newaxis]
 
         image = np.repeat(random_color, 64, axis=1)
