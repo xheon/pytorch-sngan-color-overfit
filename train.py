@@ -20,11 +20,9 @@ def train(opts):
     # Other params
     batch_size: int = 32
     latent_dimension: int = 8
+    validation_size: int = 36
 
     os.makedirs(opts.output_path, exist_ok=True)
-    for sample_index in range(batch_size):
-        sample_path = os.path.join(opts.output_path, f"{sample_index:03d}")
-        os.makedirs(sample_path, exist_ok=True)
 
     # Define models
     generator = Generator(latent_dimension).to(device, non_blocking=True)
@@ -33,7 +31,8 @@ def train(opts):
     # Define train data loader
     max_iterations: int = 200000
     dataset = Dataset(max_iterations * batch_size)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
+    train_dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
+    val_dataloader = torch.utils.data.DataLoader(dataset, batch_size=validation_size, shuffle=False, pin_memory=True)
 
     # Define optimizers
     optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.0001, betas=(0.5, 0.99))
@@ -42,21 +41,15 @@ def train(opts):
     criterion = torch.nn.functional.binary_cross_entropy_with_logits
 
     # Define validation params
-    z_validation = torch.randn(batch_size, latent_dimension, 1, 1, device=device)
+    z_validation = torch.randn(validation_size, latent_dimension, 1, 1, device=device)
 
     # Export some real images
-    real_sample_images = next(iter(dataloader))
-    real_sample_path = os.path.join(opts.output_path, f"real")
-    os.makedirs(real_sample_path, exist_ok=True)
-
-    for sample_id in range(batch_size):
-        sample_iteration_path = os.path.join(real_sample_path, f"{sample_id:05d}.jpg")
-        image_sample = (real_sample_images[sample_id].permute(1, 2, 0).numpy() + 1) / 2
-        image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
-        image_sample.save(sample_iteration_path)
+    real_sample_images = to_rgb(next(iter(val_dataloader)))
+    real_sample_grid = image_grid(real_sample_images)
+    real_sample_grid.save(os.path.join(opts.output_path, f"real.png"))
 
     # Train loop
-    for iteration, images in enumerate(dataloader):
+    for iteration, images in enumerate(train_dataloader):
         # Move data to gpu
         images = images.to(device, non_blocking=True)
 
@@ -115,15 +108,37 @@ def train(opts):
                 generator.train()
 
             # output image
-            for sample_id in range(batch_size):
-                sample_iteration_path = os.path.join(opts.output_path, f"{sample_id:03d}", f"{iteration+1:05d}.jpg")
-                image_sample = (val_samples[sample_id].permute(1, 2, 0).numpy() + 1) / 2
-                image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
-                image_sample.save(sample_iteration_path)
+            val_grid_path = os.path.join(opts.output_path, f"{iteration+1:05d}.png")
+            val_grid = image_grid(to_rgb(val_samples))
+            val_grid.save(val_grid_path)
 
 
 def set_gpus(gpus):
     os.environ['CUDA_VISIBLE_DEVICES'] = str(gpus)
+
+
+def to_rgb(batch: np.array) -> np.array:
+    batch = (batch.permute(0, 2, 3, 1).numpy() + 1) / 2
+    batch = (batch * 255).astype(np.uint8)
+    return batch
+
+
+def image_grid(images: np.array) -> Image:
+    num_images = int(np.sqrt(images.shape[0]))
+    sample_width = images.shape[1]
+    padding = 5
+    grid_size = num_images * sample_width + (num_images - 1) * padding
+    grid = Image.new("RGB", (grid_size, grid_size))
+
+    for i in range(num_images):
+        for j in range(num_images):
+            index = i * num_images + j
+            sample = Image.fromarray(images[index], mode="RGB")
+            pos_x = j * (sample_width + padding)
+            pos_y = i * (sample_width + padding)
+            grid.paste(sample, (pos_x, pos_y))
+
+    return grid
 
 
 if __name__ == '__main__':
