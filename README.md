@@ -2,8 +2,12 @@
 
 This is a simple GAN setup with spectral normalization using `Python 3.7` and `PyTorch 1.3`.
 
+## Task
+The task of the generative network is to generate **a solid colored image of size 64x64**. 
+
+
 ## Input data
-The real target data is a solid color with the size 64px x 64px.
+The real target data is a solid color with the size 64x64.
 The color palette is adapted from the qualitative color map Set-1 from [ColorBrewer](https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=8).
 
 ![color palette](images/color_scheme.png)
