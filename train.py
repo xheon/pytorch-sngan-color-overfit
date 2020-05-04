@@ -19,7 +19,7 @@ def train(opts):
 
     # Other params
     batch_size: int = 32
-    latent_dimension: int = 8
+    latent_dimension: int = 1
     validation_size: int = 36
 
     os.makedirs(opts.output_path, exist_ok=True)

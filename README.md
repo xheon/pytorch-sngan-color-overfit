@@ -1,10 +1,13 @@
 # SNGAN Color Overfit
 
-This is a simple GAN setup with spectral normalization.
+This is a simple GAN setup with spectral normalization using `Python 3.7` and `PyTorch 1.3`.
+
 The real data is a 64x64 image chosen from 1 of 8 colors.
 
 ## Input data
-![real data](images/real_sample.png)
+Real data are solid colors from a qualitative color map from [ColorBrewer](https://colorbrewer2.org/#type=qualitative&scheme=Set1&n=8).
+
+![real data](images/color_scheme.png)
 
 ## Training
 `
