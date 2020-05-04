@@ -50,8 +50,11 @@ def train(opts):
 
     # Export some real images
     real_sample_images = next(iter(dataloader))
+    real_sample_path = os.path.join(opts.output_path, f"real")
+    os.makedirs(real_sample_path, exist_ok=True)
+
     for sample_id in range(batch_size):
-        sample_iteration_path = os.path.join(opts.output_path, f"real", f"{sample_id + 1:05d}.jpg")
+        sample_iteration_path = os.path.join(real_sample_path, f"{sample_id + 1:05d}.jpg")
         image_sample = (real_sample_images[sample_id].permute(1, 2, 0).numpy() + 1) / 2
         image_sample = Image.fromarray(image_sample, mode="RGB")
         image_sample.save(sample_iteration_path)
