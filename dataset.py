@@ -7,6 +7,7 @@ class Dataset(torch.utils.data.Dataset):
     def __init__(self, max_iterations):
         super().__init__()
 
+        # ColorBrewer Qualitative 8-class Set1 color palette
         self.colors = np.array([
             (228, 26, 28),
             (55, 126, 184),
