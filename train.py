@@ -19,7 +19,7 @@ def train(opts):
 
     # Other params
     batch_size: int = 32
-    latent_dimension: int = 1
+    latent_dimension: int = 8
 
     os.makedirs(opts.output_path, exist_ok=True)
     for sample_index in range(batch_size):
@@ -50,7 +50,7 @@ def train(opts):
     os.makedirs(real_sample_path, exist_ok=True)
 
     for sample_id in range(batch_size):
-        sample_iteration_path = os.path.join(real_sample_path, f"{sample_id + 1:05d}.jpg")
+        sample_iteration_path = os.path.join(real_sample_path, f"{sample_id:05d}.jpg")
         image_sample = (real_sample_images[sample_id].permute(1, 2, 0).numpy() + 1) / 2
         image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
         image_sample.save(sample_iteration_path)
