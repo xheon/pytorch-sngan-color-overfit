@@ -27,7 +27,7 @@ class Discriminator(nn.Module):
             nn.LeakyReLU(0.2, inplace=True),
             # nn.BatchNorm2d(256),
 
-            torch.nn.utils.spectral_norm(nn.Conv2d(256, 512, 2, 1, 0, bias=False)),  # 4
+            torch.nn.utils.spectral_norm(nn.Conv2d(256, 512, 2, 1, 0, bias=False)),  # 1
             nn.LeakyReLU(0.2, inplace=True),
             # nn.BatchNorm2d(512),
 

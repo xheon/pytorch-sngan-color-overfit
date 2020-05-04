@@ -37,7 +37,8 @@ def train(opts):
 
     # Define optimizers
     optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.0001, betas=(0.5, 0.99))
-    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.0001, betas=(0.5, 0.99))
+    optimizer_d = torch.optim.Adam(filter(lambda p: p.requires_grad, discriminator.parameters()),
+                                   lr=0.0001, betas=(0.5, 0.99))
 
     criterion = torch.nn.functional.binary_cross_entropy_with_logits
 
@@ -46,6 +47,14 @@ def train(opts):
     # Define validation params
     z_validation = torch.randn(batch_size, latent_dimension, 1, 1, device=device)
 
+
+    # Export some real images
+    real_sample_images = next(iter(dataloader))
+    for sample_id in range(batch_size):
+        sample_iteration_path = os.path.join(opts.output_path, f"real", f"{sample_id + 1:05d}.jpg")
+        image_sample = (real_sample_images[sample_id].permute(1, 2, 0).numpy() + 1) / 2
+        image_sample = Image.fromarray(image_sample, mode="RGB")
+        image_sample.save(sample_iteration_path)
 
     # Train loop
     for iteration, images in enumerate(dataloader):
@@ -102,9 +111,9 @@ def train(opts):
         # Validation
         if iteration % opts.validation_frequency == opts.validation_frequency - 1:
             with torch.no_grad():
-                generator.eval()
+                # generator.eval()
                 val_samples = generator(z_validation).to("cpu")
-                generator.train()
+                # generator.train()
 
             for sample_id in range(batch_size):
                 sample_iteration_path = os.path.join(opts.output_path, f"{sample_id:03d}", f"{iteration+1:05d}.jpg")
