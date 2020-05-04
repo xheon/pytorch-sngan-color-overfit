@@ -5,6 +5,7 @@ import os
 import torch
 import torch.utils.data
 from PIL import Image
+import numpy as np
 
 from dataset import Dataset
 from discriminator import Discriminator
@@ -56,7 +57,7 @@ def train(opts):
     for sample_id in range(batch_size):
         sample_iteration_path = os.path.join(real_sample_path, f"{sample_id + 1:05d}.jpg")
         image_sample = (real_sample_images[sample_id].permute(1, 2, 0).numpy() + 1) / 2
-        image_sample = Image.fromarray(image_sample, mode="RGB")
+        image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
         image_sample.save(sample_iteration_path)
 
     # Train loop
@@ -114,14 +115,14 @@ def train(opts):
         # Validation
         if iteration % opts.validation_frequency == opts.validation_frequency - 1:
             with torch.no_grad():
-                # generator.eval()
+                generator.eval()
                 val_samples = generator(z_validation).to("cpu")
-                # generator.train()
+                generator.train()
 
             for sample_id in range(batch_size):
                 sample_iteration_path = os.path.join(opts.output_path, f"{sample_id:03d}", f"{iteration+1:05d}.jpg")
                 image_sample = (val_samples[sample_id].permute(1, 2, 0).numpy() + 1) / 2
-                image_sample = Image.fromarray(image_sample, mode="RGB")
+                image_sample = Image.fromarray((image_sample * 255).astype(np.uint8), mode="RGB")
                 image_sample.save(sample_iteration_path)
 
         # every N iteration output log to tensorboard
