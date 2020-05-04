@@ -26,7 +26,7 @@ class Dataset(torch.utils.data.Dataset):
 
         image = np.repeat(random_color, 64, axis=1)
         image = np.repeat(image, 64, axis=2)
-        image = image.astype(np.float32) / 255.0
+        image = (image.astype(np.float32) / 255.0) * 2 - 1
 
         return image
 

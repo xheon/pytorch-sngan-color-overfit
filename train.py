@@ -36,8 +36,8 @@ def train(opts):
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
     # Define optimizers
-    optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.001, betas=(0.9, 0.99))
-    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.001, betas=(0.9, 0.99))
+    optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.0001, betas=(0.5, 0.99))
+    optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.0001, betas=(0.5, 0.99))
 
     criterion = torch.nn.functional.binary_cross_entropy_with_logits
 
@@ -108,7 +108,7 @@ def train(opts):
 
             for sample_id in range(batch_size):
                 sample_iteration_path = os.path.join(opts.output_path, f"{sample_id:03d}", f"{iteration+1:05d}.jpg")
-                image_sample = val_samples[sample_id].permute(1, 2, 0).numpy()
+                image_sample = (val_samples[sample_id].permute(1, 2, 0).numpy() + 1) / 2
                 image_sample = Image.fromarray(image_sample, mode="RGB")
                 image_sample.save(sample_iteration_path)
 

@@ -61,7 +61,7 @@ class Generator(nn.Module):
             nn.ReLU(inplace=True),
 
             nn.Conv2d(64, 3, 3, 1, 1, bias=False),
-            nn.Sigmoid()
+            nn.Tanh()
         )
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
