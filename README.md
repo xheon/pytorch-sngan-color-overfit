@@ -3,10 +3,13 @@
 This is a simple GAN setup with spectral normalization.
 The real data is a 64x64 image chosen from 1 of 8 colors.
 
+## Input data
+![real data](images/real_sample.png)
+
 ## Training
-```python
+`
 python train.py --gpu 0 --output_path "<output_path>"
-```
+`
 
 ## Loss outputs
 ```
@@ -22,3 +25,11 @@ python train.py --gpu 0 --output_path "<output_path>"
   100:	Loss(G): 0.8660	Loss(D): 0.6519	Real Pred.: 0.4738	Fake Pred.: 0.4207
 ```
 
+## Image outputs
+ Iteration | Output 
+--- | ---
+00100 | ![fake_00100](images/fake_00100.png)
+02500 | ![fake_02500](images/fake_02500.png)
+05000 | ![fake_05000](images/fake_05000.png)
+07500 | ![fake_07500](images/fake_07500.png)
+01000 | ![fake_10000](images/fake_10000.png)
