@@ -35,4 +35,4 @@ python train.py --gpu 0 --output_path "<output_path>"
 02500 | ![fake_02500](images/fake_02500.png)
 05000 | ![fake_05000](images/fake_05000.png)
 07500 | ![fake_07500](images/fake_07500.png)
-01000 | ![fake_10000](images/fake_10000.png)
+10000 | ![fake_10000](images/fake_10000.png)
